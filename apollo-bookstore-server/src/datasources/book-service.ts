@@ -22,6 +22,18 @@ export class BookService extends DataSource {
         return Promise.resolve(filteredBooks);
     }
 
+    createAuthor(authorInput) {
+        const author = Object.assign({}, authorInput, { id: newId() });
+        authors.push(author);
+        return Promise.resolve(author);
+    }
+
+    updateAuthor(authorId, authorInput) {
+        let author = findAuthor(authorId);
+        author = author ? Object.assign(author, authorInput) : null;
+        return Promise.resolve(author);
+    }
+
     getPublishers() {
         return Promise.resolve(publishers);
     }
@@ -34,6 +46,18 @@ export class BookService extends DataSource {
         return Promise.resolve(
             books.filter(book => book.publisherId === publisherId)
         );
+    }
+
+    createPublisher(publisherInput) {
+        const publisher = Object.assign({}, publisherInput, { id: newId() });
+        publishers.push(publisher);
+        return Promise.resolve(publisher);
+    }
+
+    updatePublisher(publisherId, publisherInput) {
+        let publisher = findPublisher(publisherId);
+        publisher = publisher ? Object.assign(publisher, publisherInput) : null;
+        return Promise.resolve(publisher);
     }
 
     getBooks() {
@@ -56,9 +80,50 @@ export class BookService extends DataSource {
             .map(bookAuthor => findAuthor(bookAuthor.authorId));
         return Promise.resolve(filteredAuthors);
     }
+
+    createBook(bookInput, publisherId) {
+        const book = Object.assign({}, bookInput, { id: newId(), publisherId });
+        books.push(book);
+        return Promise.resolve(book);
+    }
+
+    updateBook(bookId, bookInput, publisherId) {
+        let book = findBook(bookId);
+        book = book ? Object.assign(book, bookInput) : null;
+        if (book) {
+            book = Object.assign(book, bookInput, { publisherId: publisherId });
+        }
+        return Promise.resolve(book);
+    }
+
+    setBookAuthors(bookId, authorIds) {
+        const book = findBook(bookId);
+        if (book) {
+            // Remove current book authors
+            bookAuthors = bookAuthors.filter(
+                bookAuthor => bookAuthor.bookId !== bookId
+            );
+
+            // Add new book authors
+            authorIds.forEach(authorId => {
+                bookAuthors.push({
+                    id: `${bookId}-${authorId}`,
+                    bookId: bookId,
+                    authorId: authorId
+                });
+            });
+        }
+        return Promise.resolve(book);
+    }
 }
 
 // ----- Helper Functions -----
+function newId() {
+    return Math.random()
+        .toString(36)
+        .substring(7);
+}
+
 function findAuthor(id) {
     return authors.find(author => author.id === id);
 }

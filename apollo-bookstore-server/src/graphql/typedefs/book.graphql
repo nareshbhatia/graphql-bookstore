@@ -9,3 +9,14 @@ type Query {
     books: [Book!]!
     book(id: ID!): Book!
 }
+
+type Mutation {
+    createBook(book: BookInput!): Book!
+    updateBook(bookId: ID!, book: BookInput!): Book!
+    setBookAuthors(bookId: ID!, authorIds: [ID!]): Book!
+}
+
+input BookInput {
+    name: String!
+    publisherId: ID!
+}

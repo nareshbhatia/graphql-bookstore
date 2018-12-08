@@ -8,3 +8,8 @@ type Query {
     publishers: [Publisher!]!
     publisher(id: ID!): Publisher!
 }
+
+type Mutation {
+    createPublisher(name: String!): Publisher!
+    updatePublisher(publisherId: ID!, name: String!): Publisher!
+}

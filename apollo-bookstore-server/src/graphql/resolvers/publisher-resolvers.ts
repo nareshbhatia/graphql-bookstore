@@ -10,6 +10,19 @@ export default {
         }
     },
 
+    Mutation: {
+        createPublisher(parent, args) {
+            return dataSources.bookService.createPublisher({
+                name: args.name
+            });
+        },
+        updatePublisher(parent, args) {
+            return dataSources.bookService.updatePublisher(args.publisherId, {
+                name: args.name
+            });
+        }
+    },
+
     Publisher: {
         books(parent) {
             return dataSources.bookService.getPublisherBooks(parent.id);
