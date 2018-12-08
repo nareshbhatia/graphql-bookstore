@@ -13,3 +13,12 @@ type Mutation {
     createPublisher(name: String!): Publisher!
     updatePublisher(publisherId: ID!, name: String!): Publisher!
 }
+
+type Subscription {
+    publisherMutated: PublisherMutationPayload!
+}
+
+type PublisherMutationPayload {
+    mutation: MutationType!
+    node: Publisher!
+}

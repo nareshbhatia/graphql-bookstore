@@ -20,3 +20,12 @@ input BookInput {
     name: String!
     publisherId: ID!
 }
+
+type Subscription {
+    bookMutated: BookMutationPayload!
+}
+
+type BookMutationPayload {
+    mutation: MutationType!
+    node: Book!
+}

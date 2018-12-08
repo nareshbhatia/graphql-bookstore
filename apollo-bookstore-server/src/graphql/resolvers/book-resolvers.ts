@@ -1,4 +1,7 @@
 import { dataSources } from '../../datasources';
+import { pubsub } from '../pubsub';
+
+const BOOK_MUTATED = 'bookMutated';
 
 export default {
     Query: {
@@ -13,28 +16,45 @@ export default {
     Mutation: {
         createBook(parent, args) {
             const { publisherId, ...rest } = args.book;
-            return dataSources.bookService.createBook(
-                {
-                    ...rest
-                },
-                publisherId
-            );
+            return dataSources.bookService
+                .createBook(
+                    {
+                        ...rest
+                    },
+                    publisherId
+                )
+                .then(book => {
+                    pubsub.publish(BOOK_MUTATED, {
+                        bookMutated: {
+                            mutation: 'CREATED',
+                            node: book
+                        }
+                    });
+                    return book;
+                });
         },
         updateBook(parent, args) {
             const { publisherId, ...rest } = args.book;
-            return dataSources.bookService.updateBook(
-                args.bookId,
-                {
-                    ...rest
-                },
-                publisherId
-            );
+            return dataSources.bookService
+                .updateBook(
+                    args.bookId,
+                    {
+                        ...rest
+                    },
+                    publisherId
+                )
+                .then(publishBookUpdated);
         },
         setBookAuthors(parent, args) {
-            return dataSources.bookService.setBookAuthors(
-                args.bookId,
-                args.authorIds
-            );
+            return dataSources.bookService
+                .setBookAuthors(args.bookId, args.authorIds)
+                .then(publishBookUpdated);
+        }
+    },
+
+    Subscription: {
+        bookMutated: {
+            subscribe: () => pubsub.asyncIterator(BOOK_MUTATED)
         }
     },
 
@@ -47,3 +67,13 @@ export default {
         }
     }
 };
+
+function publishBookUpdated(book) {
+    pubsub.publish(BOOK_MUTATED, {
+        bookMutated: {
+            mutation: 'UPDATED',
+            node: book
+        }
+    });
+    return book;
+}
