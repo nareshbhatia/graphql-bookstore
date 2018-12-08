@@ -1,0 +1,30 @@
+{
+  "name": "apollo-bookstore-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "start:debug": "ndb ts-node src/index.ts",
+    "dev": "nodemon --watch src -e ts,graphql --exec yarn start",
+    "build": "tsc",
+    "format": "prettier --write 'src/**/*.ts'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-datasource": "^0.2.1",
+    "apollo-server": "^2.2.6",
+    "graphql": "^14.0.2",
+    "graphql-redis-subscriptions": "^2.0.0",
+    "merge-graphql-schemas": "^1.5.8"
+  },
+  "devDependencies": {
+    "@types/node": "^10.12.12",
+    "nodemon": "^1.18.7",
+    "prettier": "^1.15.3",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.2"
+  }
+}
