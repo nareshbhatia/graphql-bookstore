@@ -13,7 +13,7 @@ export class AuthorsContainer extends React.Component {
     render() {
         return (
             <DefaultQuery query={GET_AUTHORS}>
-                {({ data: { authors }, subscribeToMore }) => {
+                {({ data, subscribeToMore }) => {
                     // Subscribe to author mutations - only once
                     if (!this.unsubscribe) {
                         this.unsubscribe = subscribeToAuthorMutations(
@@ -21,7 +21,7 @@ export class AuthorsContainer extends React.Component {
                         );
                     }
 
-                    return <AuthorsPanel authors={authors} />;
+                    return <AuthorsPanel data={data} />;
                 }}
             </DefaultQuery>
         );

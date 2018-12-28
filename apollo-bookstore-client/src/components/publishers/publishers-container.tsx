@@ -13,7 +13,7 @@ export class PublishersContainer extends React.Component {
     render() {
         return (
             <DefaultQuery query={GET_PUBLISHERS}>
-                {({ data: { publishers }, subscribeToMore }) => {
+                {({ data, subscribeToMore }) => {
                     // Subscribe to publisher mutations - only once
                     if (!this.unsubscribe) {
                         this.unsubscribe = subscribeToPublisherMutations(
@@ -21,7 +21,7 @@ export class PublishersContainer extends React.Component {
                         );
                     }
 
-                    return <PublishersPanel publishers={publishers} />;
+                    return <PublishersPanel data={data} />;
                 }}
             </DefaultQuery>
         );

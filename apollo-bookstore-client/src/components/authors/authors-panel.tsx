@@ -12,10 +12,10 @@ import { Mutation } from 'react-apollo';
 import { PanelHeader, ScrollingPaper } from '..';
 import { AuthorDialog } from './author-dialog';
 import { GET_AUTHORS } from './authors-queries';
-import { GetAuthors_authors } from './__generated__/GetAuthors';
+import { GetAuthors } from './__generated__/GetAuthors';
 
 export interface AuthorsPanelProps {
-    authors: Array<GetAuthors_authors>;
+    data: GetAuthors;
 }
 
 @observer
@@ -27,7 +27,9 @@ export class AuthorsPanel extends React.Component<AuthorsPanelProps> {
     @observable editedAuthor;
 
     public render() {
-        const { authors } = this.props;
+        const {
+            data: { authors }
+        } = this.props;
 
         return (
             <React.Fragment>
@@ -68,21 +70,7 @@ export class AuthorsPanel extends React.Component<AuthorsPanelProps> {
                                         },
                                         // Update AuthorsQuery in Apollo cache
                                         // Needed only in this "Create" case
-                                        // TODO: Does not work. See
-                                        // https://github.com/apollographql/apollo-client/issues/2415
-                                        update: (
-                                            store,
-                                            { data: { createAuthor } }
-                                        ) => {
-                                            const data = store.readQuery({
-                                                query: GET_AUTHORS
-                                            }) as any;
-                                            data.authors.push(createAuthor);
-                                            store.writeQuery({
-                                                query: GET_AUTHORS,
-                                                data
-                                            });
-                                        }
+                                        update: updateAuthorsQuery
                                     });
                                     this.hideAuthorDialog();
                                 }}
@@ -133,6 +121,26 @@ export class AuthorsPanel extends React.Component<AuthorsPanelProps> {
     hideAuthorDialog = () => {
         this.showAuthorDialog = false;
     };
+}
+
+function findAuthor(authors, authorId) {
+    return authors.find(author => author.id === authorId);
+}
+
+// Function to update AuthorsQuery in Apollo cache
+// Needed only in this CREATE_AUTHOR case
+function updateAuthorsQuery(store, { data: { createAuthor } }) {
+    const data = store.readQuery({
+        query: GET_AUTHORS
+    }) as any;
+    // Don't double add the author
+    if (!findAuthor(data.authors, createAuthor.id)) {
+        data.authors.push(createAuthor);
+        store.writeQuery({
+            query: GET_AUTHORS,
+            data
+        });
+    }
 }
 
 const CREATE_AUTHOR = gql`

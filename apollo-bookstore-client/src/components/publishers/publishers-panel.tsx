@@ -11,10 +11,11 @@ import { observer } from 'mobx-react';
 import { Mutation } from 'react-apollo';
 import { PanelHeader, ScrollingPaper } from '..';
 import { PublisherDialog } from './publisher-dialog';
-import { GetPublishers_publishers } from './__generated__/GetPublishers';
+import { GET_PUBLISHERS } from './publishers-queries';
+import { GetPublishers } from './__generated__/GetPublishers';
 
 export interface PublishersPanelProps {
-    publishers: Array<GetPublishers_publishers>;
+    data: GetPublishers;
 }
 
 @observer
@@ -26,7 +27,9 @@ export class PublishersPanel extends React.Component<PublishersPanelProps> {
     @observable editedPublisher;
 
     public render() {
-        const { publishers } = this.props;
+        const {
+            data: { publishers }
+        } = this.props;
 
         return (
             <React.Fragment>
@@ -66,7 +69,10 @@ export class PublishersPanel extends React.Component<PublishersPanelProps> {
                                     createPublisher({
                                         variables: {
                                             name: publisher.name
-                                        }
+                                        },
+                                        // Update PublishersQuery in Apollo cache
+                                        // Needed only in this "Create" case
+                                        update: updatePublishersQuery
                                     });
                                     this.hidePublisherDialog();
                                 }}
@@ -117,6 +123,26 @@ export class PublishersPanel extends React.Component<PublishersPanelProps> {
     hidePublisherDialog = () => {
         this.showPublisherDialog = false;
     };
+}
+
+function findPublisher(publishers, publisherId) {
+    return publishers.find(publisher => publisher.id === publisherId);
+}
+
+// Function to update PublishersQuery in Apollo cache
+// Needed only in this CREATE_PUBLISHER case
+function updatePublishersQuery(store, { data: { createPublisher } }) {
+    const data = store.readQuery({
+        query: GET_PUBLISHERS
+    }) as any;
+    // Don't double add the publisher
+    if (!findPublisher(data.publishers, createPublisher.id)) {
+        data.publishers.push(createPublisher);
+        store.writeQuery({
+            query: GET_PUBLISHERS,
+            data
+        });
+    }
 }
 
 const CREATE_PUBLISHER = gql`

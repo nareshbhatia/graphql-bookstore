@@ -15,7 +15,7 @@ export class BooksContainer extends React.Component {
     render() {
         return (
             <DefaultQuery query={GET_BOOKS}>
-                {({ data: { books }, subscribeToMore }) => {
+                {({ data: dataBooks, subscribeToMore }) => {
                     // Subscribe to book mutations - only once
                     if (!this.unsubscribe) {
                         this.unsubscribe = subscribeToBookMutations(
@@ -25,13 +25,13 @@ export class BooksContainer extends React.Component {
 
                     return (
                         <DefaultQuery query={GET_AUTHORS}>
-                            {({ data: { authors } }) => (
+                            {({ data: dataAuthors }) => (
                                 <DefaultQuery query={GET_PUBLISHERS}>
-                                    {({ data: { publishers } }) => (
+                                    {({ data: dataPublishers }) => (
                                         <BooksPanel
-                                            books={books}
-                                            authors={authors}
-                                            publishers={publishers}
+                                            dataBooks={dataBooks}
+                                            dataAuthors={dataAuthors}
+                                            dataPublishers={dataPublishers}
                                         />
                                     )}
                                 </DefaultQuery>

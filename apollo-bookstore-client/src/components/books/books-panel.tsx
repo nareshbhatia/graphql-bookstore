@@ -11,20 +11,20 @@ import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Mutation } from 'react-apollo';
 import { PanelHeader, ScrollingPaper } from '..';
-import { GetAuthors_authors } from '../authors/__generated__/GetAuthors';
-import { GetPublishers_publishers } from '../publishers/__generated__/GetPublishers';
+import { GetAuthors } from '../authors/__generated__/GetAuthors';
+import { GetPublishers } from '../publishers/__generated__/GetPublishers';
 import { AuthorsDialog } from './authors-dialog';
 import { BookDialog } from './book-dialog';
-import { BOOK_FRAGMENT } from './books-queries';
-import { GetBooks_books } from './__generated__/GetBooks';
+import { BOOK_FRAGMENT, GET_BOOKS } from './books-queries';
+import { GetBooks } from './__generated__/GetBooks';
 import { CreateBookVariables } from './__generated__/CreateBook';
 import { UpdateBookVariables } from './__generated__/UpdateBook';
 import { SetBookAuthorsVariables } from './__generated__/SetBookAuthors';
 
 export interface BooksPanelProps {
-    books: Array<GetBooks_books>;
-    authors: Array<GetAuthors_authors>;
-    publishers: Array<GetPublishers_publishers>;
+    dataBooks: GetBooks;
+    dataAuthors: GetAuthors;
+    dataPublishers: GetPublishers;
 }
 
 @observer
@@ -37,7 +37,11 @@ export class BooksPanel extends React.Component<BooksPanelProps> {
     @observable editedBook;
 
     public render() {
-        const { books, authors, publishers } = this.props;
+        const {
+            dataBooks: { books },
+            dataAuthors: { authors },
+            dataPublishers: { publishers }
+        } = this.props;
 
         return (
             <React.Fragment>
@@ -98,7 +102,12 @@ export class BooksPanel extends React.Component<BooksPanelProps> {
                                             publisherId: book.publisherId
                                         }
                                     };
-                                    createBook({ variables });
+                                    createBook({
+                                        variables,
+                                        // Update BooksQuery in Apollo cache
+                                        // Needed only in this "Create" case
+                                        update: updateBooksQuery
+                                    });
                                     this.hideBookDialog();
                                 }}
                                 onCancel={this.hideBookDialog}
@@ -187,6 +196,26 @@ export class BooksPanel extends React.Component<BooksPanelProps> {
     hideAuthorsDialog = () => {
         this.showAuthorsDialog = false;
     };
+}
+
+function findBook(books, bookId) {
+    return books.find(book => book.id === bookId);
+}
+
+// Function to update BooksQuery in Apollo cache
+// Needed only in the CREATE_BOOK use case
+function updateBooksQuery(store, { data: { createBook } }) {
+    const data = store.readQuery({
+        query: GET_BOOKS
+    }) as any;
+    // Don't double add the book
+    if (!findBook(data.books, createBook.id)) {
+        data.books.push(createBook);
+        store.writeQuery({
+            query: GET_BOOKS,
+            data
+        });
+    }
 }
 
 const CREATE_BOOK = gql`
