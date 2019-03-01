@@ -115,15 +115,17 @@ function findAuthor(authors: Array<any>, authorId: string) {
 // Needed only in this CREATE_AUTHOR case
 function updateAuthorsQuery(store: DataProxy, result: any) {
     const resultAuthor = result.data.createAuthor;
-    const storeData = store.readQuery({
+    const prevData = store.readQuery({
         query: GET_AUTHORS
     }) as any;
     // Don't double add the author
-    if (!findAuthor(storeData.authors, resultAuthor.id)) {
-        storeData.authors.push(resultAuthor);
+    if (!findAuthor(prevData.authors, resultAuthor.id)) {
+        const nextData = Object.assign({}, prevData, {
+            authors: [...prevData.authors, resultAuthor]
+        });
         store.writeQuery({
             query: GET_AUTHORS,
-            data: storeData
+            data: nextData
         });
     }
 }

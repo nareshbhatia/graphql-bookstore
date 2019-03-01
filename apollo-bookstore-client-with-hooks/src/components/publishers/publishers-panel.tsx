@@ -117,15 +117,17 @@ function findPublisher(publishers: Array<any>, publisherId: string) {
 // Needed only in this CREATE_PUBLISHER case
 function updatePublishersQuery(store: DataProxy, result: any) {
     const resultPublisher = result.data.createPublisher;
-    const storeData = store.readQuery({
+    const prevData = store.readQuery({
         query: GET_PUBLISHERS
     }) as any;
     // Don't double add the publisher
-    if (!findPublisher(storeData.publishers, resultPublisher.id)) {
-        storeData.publishers.push(resultPublisher);
+    if (!findPublisher(prevData.publishers, resultPublisher.id)) {
+        const nextData = Object.assign({}, prevData, {
+            publishers: [...prevData.publishers, resultPublisher]
+        });
         store.writeQuery({
             query: GET_PUBLISHERS,
-            data: storeData
+            data: nextData
         });
     }
 }

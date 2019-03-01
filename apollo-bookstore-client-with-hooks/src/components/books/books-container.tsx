@@ -1,11 +1,14 @@
 import React from 'react';
 
-import { useQuery } from 'react-apollo-hooks';
+import gql from 'graphql-tag';
+import { useQuery, useSubscription } from 'react-apollo-hooks';
 import { HandleQuery } from '..';
+import { MutationType } from '../../graphql-types';
 import { GET_AUTHORS } from '../authors/authors-queries';
 import { GET_PUBLISHERS } from '../publishers/publishers-queries';
 import { BooksPanel } from './books-panel';
-import { GET_BOOKS } from './books-queries';
+import { BOOK_FRAGMENT, GET_BOOKS } from './books-queries';
+import { BookMutated } from './__generated__/BookMutated';
 
 export const BooksContainer = () => {
     const {
@@ -33,6 +36,60 @@ export const BooksContainer = () => {
         ? errorAuthors
         : errorPublishers;
 
+    useSubscription(BOOK_MUTATED, {
+        onSubscriptionData: ({ client, subscriptionData }) => {
+            // Get the current value of books query
+            const prevData = client.readQuery({
+                query: GET_BOOKS
+            }) as any;
+
+            // Extract mutation type and book from the subscription data
+            const bookMutatedWrapper: BookMutated = subscriptionData.data;
+            const { bookMutated } = bookMutatedWrapper;
+            const { mutation, node: subsBook } = bookMutated;
+
+            // Determine the next value of books query
+            let nextData;
+            switch (mutation) {
+                case MutationType.CREATED: {
+                    // Don't double add the book
+                    if (!findBook(prevData.books, subsBook.id)) {
+                        nextData = Object.assign({}, prevData, {
+                            books: [...prevData.books, subsBook]
+                        });
+                    }
+                    break;
+                }
+                case MutationType.UPDATED: {
+                    // Replace previous book with updated one
+                    nextData = Object.assign({}, prevData, {
+                        books: prevData.books.map((book: any) =>
+                            book.id === subsBook.id ? subsBook : book
+                        )
+                    });
+                    break;
+                }
+                case MutationType.DELETED: {
+                    // Delete book
+                    nextData = Object.assign({}, prevData, {
+                        books: prevData.books.filter(
+                            (book: any) => book.id !== subsBook.id
+                        )
+                    });
+                    break;
+                }
+            }
+
+            // Write updated store data
+            if (nextData) {
+                client.writeQuery({
+                    query: GET_BOOKS,
+                    data: nextData
+                });
+            }
+        }
+    });
+
     return (
         <HandleQuery loading={loading} error={error}>
             <BooksPanel
@@ -43,3 +100,21 @@ export const BooksContainer = () => {
         </HandleQuery>
     );
 };
+
+function findBook(books: Array<any>, bookId: string) {
+    return books.find(book => book.id === bookId);
+}
+
+const BOOK_MUTATED = gql`
+    subscription BookMutated {
+        bookMutated {
+            mutation
+            node {
+                __typename
+                ...BookFragment
+            }
+        }
+    }
+
+    ${BOOK_FRAGMENT}
+`;

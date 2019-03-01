@@ -196,15 +196,17 @@ function findBook(books: Array<any>, bookId: string) {
 // Needed only in the CREATE_BOOK use case
 function updateBooksQuery(store: DataProxy, result: any) {
     const resultBook = result.data.createBook;
-    const storeData = store.readQuery({
+    const prevData = store.readQuery({
         query: GET_BOOKS
     }) as any;
     // Don't double add the book
-    if (!findBook(storeData.books, resultBook.id)) {
-        storeData.books.push(resultBook);
+    if (!findBook(prevData.books, resultBook.id)) {
+        const nextData = Object.assign({}, prevData, {
+            books: [...prevData.books, resultBook]
+        });
         store.writeQuery({
             query: GET_BOOKS,
-            data: storeData
+            data: nextData
         });
     }
 }

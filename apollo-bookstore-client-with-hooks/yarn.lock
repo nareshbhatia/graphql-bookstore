@@ -8508,9 +8508,9 @@ p-try@^2.0.0:
   integrity sha512-hMp0onDKIajHfIkdRk3P4CdCmErkYAxxDtP3Wx/4nZ3aGlau2VKh3mZpcuFkH27WQkL/3WBCPOktzA9ZOAnMQQ==
 
 pako@~1.0.5:
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.8.tgz#6844890aab9c635af868ad5fecc62e8acbba3ea4"
-  integrity sha512-6i0HVbUfcKaTv+EG8ZTr75az7GFXcLYk9UyLEg7Notv/Ma+z/UG3TCoz6GiNeOrn1E/e63I0X/Hpw18jHOTUnA==
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.10.tgz#4328badb5086a426aa90f541977d4955da5c9732"
+  integrity sha512-0DTvPVU3ed8+HNXOu5Bs+o//Mbdj9VNQMUOe9oKCwh8l0GNwpTDMKCWbRjgtD291AWnkAgkqA/LOnQS8AmS1tw==
 
 parallel-transform@^1.1.0:
   version "1.1.0"
@@ -9713,10 +9713,10 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-apollo-hooks@^0.4.1:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/react-apollo-hooks/-/react-apollo-hooks-0.4.2.tgz#e031845f59b5daa1a322b4d857dafd207ab9553f"
-  integrity sha512-o4ZgTxLVf9p4cCQ8VRsplJ/xrrqyYt46EXfRl7UXLcl71R9rBLHkXwJ21mgbKwgP8aiqDG2oHKZaQY3lchEemQ==
+react-apollo-hooks@^0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/react-apollo-hooks/-/react-apollo-hooks-0.4.3.tgz#4d221c0dd49ef0ed706b095c7dae5edd5043189c"
+  integrity sha512-mRFPb7bk42wOlGnIdwLc4XO43uTczdx7CzpdTmNwjzAgb/H/nKEXeZitoF1Wgtj0Zb6R5wTGs2nBIMfz0/DzEA==
   dependencies:
     lodash "^4.17.11"
 
