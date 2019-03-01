@@ -38,16 +38,43 @@ export const BooksPanel = ({
     const updateBook = useMutation(UPDATE_BOOK);
     const setBookAuthors = useMutation(SET_BOOK_AUTHORS);
 
+    const editNewBook = () => {
+        setShowBookDialog(true);
+        setNewBook(true);
+        setEditedBook({ name: '', publisherId: '' });
+    };
+
+    const editBook = (book: any) => {
+        setShowBookDialog(true);
+        setNewBook(false);
+        setEditedBook(
+            Object.assign({}, book, {
+                publisherId: book.publisher.id
+            })
+        );
+    };
+
+    const editAuthors = (book: any) => {
+        setShowAuthorsDialog(true);
+        setNewBook(false);
+        setEditedBook(
+            Object.assign({}, book, {
+                publisherId: book.publisher.id
+            })
+        );
+    };
+
+    const hideBookDialog = () => {
+        setShowBookDialog(false);
+    };
+
+    const hideAuthorsDialog = () => {
+        setShowAuthorsDialog(false);
+    };
+
     return (
         <React.Fragment>
-            <PanelHeader
-                title="Books"
-                onAddClicked={() => {
-                    setShowBookDialog(true);
-                    setNewBook(true);
-                    setEditedBook({ name: '', publisherId: '' });
-                }}
-            />
+            <PanelHeader title="Books" onAddClicked={editNewBook} />
             <ScrollingPaper>
                 <Table>
                     <TableHead>
@@ -64,13 +91,7 @@ export const BooksPanel = ({
                                 hover
                                 key={book.id}
                                 onClick={() => {
-                                    setShowBookDialog(true);
-                                    setNewBook(false);
-                                    setEditedBook(
-                                        Object.assign({}, book, {
-                                            publisherId: book.publisher.id
-                                        })
-                                    );
+                                    editBook(book);
                                 }}
                             >
                                 <TableCell>{book.name}</TableCell>
@@ -87,14 +108,7 @@ export const BooksPanel = ({
                                 >
                                     <Button
                                         onClick={() => {
-                                            setShowAuthorsDialog(true);
-                                            setNewBook(false);
-                                            setEditedBook(
-                                                Object.assign({}, book, {
-                                                    publisherId:
-                                                        book.publisher.id
-                                                })
-                                            );
+                                            editAuthors(book);
                                         }}
                                     >
                                         Edit Authors
@@ -118,10 +132,10 @@ export const BooksPanel = ({
                             }
                         };
                         createBook({ variables });
-                        setShowBookDialog(false);
+                        hideBookDialog();
                     }}
                     onCancel={() => {
-                        setShowBookDialog(false);
+                        hideBookDialog();
                     }}
                 />
             )}
@@ -139,10 +153,10 @@ export const BooksPanel = ({
                             }
                         };
                         updateBook({ variables });
-                        setShowBookDialog(false);
+                        hideBookDialog();
                     }}
                     onCancel={() => {
-                        setShowBookDialog(false);
+                        hideBookDialog();
                     }}
                 />
             )}
@@ -157,10 +171,10 @@ export const BooksPanel = ({
                             authorIds
                         };
                         setBookAuthors({ variables });
-                        setShowAuthorsDialog(false);
+                        hideAuthorsDialog();
                     }}
                     onCancel={() => {
-                        setShowAuthorsDialog(false);
+                        hideAuthorsDialog();
                     }}
                 />
             )}

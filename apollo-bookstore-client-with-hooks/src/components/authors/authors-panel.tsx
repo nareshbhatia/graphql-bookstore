@@ -22,16 +22,25 @@ export const AuthorsPanel = ({ data: { authors } }: AuthorsPanelProps) => {
     const createAuthor = useMutation(CREATE_AUTHOR);
     const updateAuthor = useMutation(UPDATE_AUTHOR);
 
+    const editNewAuthor = () => {
+        setShowAuthorDialog(true);
+        setNewAuthor(true);
+        setEditedAuthor({ name: '' });
+    };
+
+    const editAuthor = (author: any) => {
+        setShowAuthorDialog(true);
+        setNewAuthor(false);
+        setEditedAuthor(Object.assign({}, author));
+    };
+
+    const hideAuthorDialog = () => {
+        setShowAuthorDialog(false);
+    };
+
     return (
         <React.Fragment>
-            <PanelHeader
-                title="Authors"
-                onAddClicked={() => {
-                    setShowAuthorDialog(true);
-                    setNewAuthor(true);
-                    setEditedAuthor({ name: '' });
-                }}
-            />
+            <PanelHeader title="Authors" onAddClicked={editNewAuthor} />
             <ScrollingPaper>
                 <Table>
                     <TableHead>
@@ -45,9 +54,7 @@ export const AuthorsPanel = ({ data: { authors } }: AuthorsPanelProps) => {
                                 hover
                                 key={author.id}
                                 onClick={() => {
-                                    setShowAuthorDialog(true);
-                                    setNewAuthor(false);
-                                    setEditedAuthor(Object.assign({}, author));
+                                    editAuthor(author);
                                 }}
                             >
                                 <TableCell>{author.name}</TableCell>
@@ -66,10 +73,10 @@ export const AuthorsPanel = ({ data: { authors } }: AuthorsPanelProps) => {
                                 name: author.name
                             }
                         });
-                        setShowAuthorDialog(false);
+                        hideAuthorDialog();
                     }}
                     onCancel={() => {
-                        setShowAuthorDialog(false);
+                        hideAuthorDialog();
                     }}
                 />
             )}
@@ -84,10 +91,10 @@ export const AuthorsPanel = ({ data: { authors } }: AuthorsPanelProps) => {
                                 name: author.name
                             }
                         });
-                        setShowAuthorDialog(false);
+                        hideAuthorDialog();
                     }}
                     onCancel={() => {
-                        setShowAuthorDialog(false);
+                        hideAuthorDialog();
                     }}
                 />
             )}

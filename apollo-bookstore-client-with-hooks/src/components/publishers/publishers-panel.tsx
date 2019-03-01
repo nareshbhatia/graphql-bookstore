@@ -24,16 +24,25 @@ export const PublishersPanel = ({
     const createPublisher = useMutation(CREATE_PUBLISHER);
     const updatePublisher = useMutation(UPDATE_PUBLISHER);
 
+    const editNewPublisher = () => {
+        setShowPublisherDialog(true);
+        setNewPublisher(true);
+        setEditedPublisher({ name: '' });
+    };
+
+    const editPublisher = (publisher: any) => {
+        setShowPublisherDialog(true);
+        setNewPublisher(false);
+        setEditedPublisher(Object.assign({}, publisher));
+    };
+
+    const hidePublisherDialog = () => {
+        setShowPublisherDialog(false);
+    };
+
     return (
         <React.Fragment>
-            <PanelHeader
-                title="Publishers"
-                onAddClicked={() => {
-                    setShowPublisherDialog(true);
-                    setNewPublisher(true);
-                    setEditedPublisher({ name: '' });
-                }}
-            />
+            <PanelHeader title="Publishers" onAddClicked={editNewPublisher} />
             <ScrollingPaper>
                 <Table>
                     <TableHead>
@@ -47,11 +56,7 @@ export const PublishersPanel = ({
                                 hover
                                 key={publisher.id}
                                 onClick={() => {
-                                    setShowPublisherDialog(true);
-                                    setNewPublisher(false);
-                                    setEditedPublisher(
-                                        Object.assign({}, publisher)
-                                    );
+                                    editPublisher(publisher);
                                 }}
                             >
                                 <TableCell>{publisher.name}</TableCell>
@@ -70,10 +75,10 @@ export const PublishersPanel = ({
                                 name: publisher.name
                             }
                         });
-                        setShowPublisherDialog(false);
+                        hidePublisherDialog();
                     }}
                     onCancel={() => {
-                        setShowPublisherDialog(false);
+                        hidePublisherDialog();
                     }}
                 />
             )}
@@ -88,10 +93,10 @@ export const PublishersPanel = ({
                                 name: publisher.name
                             }
                         });
-                        setShowPublisherDialog(false);
+                        hidePublisherDialog();
                     }}
                     onCancel={() => {
-                        setShowPublisherDialog(false);
+                        hidePublisherDialog();
                     }}
                 />
             )}
