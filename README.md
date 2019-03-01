@@ -16,9 +16,9 @@ Here's the front-end of the application. It is intentionally designed to show al
 
 ![Screen Shot](assets/screen-shot.png)
 
-We have two server implementations that use the same GraphQL schema:
+We have one server implementation that uses Apollo:
 1. [Apollo Bookstore Server](./apollo-bookstore-server)
-2. [Prisma Bookstore Server](./prisma-bookstore-server)
 
-There is a single client implementation using React Apollo:
+We have two client implementations using React Apollo:
 1. [Apollo Bookstore Client](./apollo-bookstore-client)
+2. [Apollo Bookstore Client with React Hooks](./apollo-bookstore-client-with-hooks)
