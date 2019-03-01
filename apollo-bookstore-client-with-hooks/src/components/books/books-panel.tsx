@@ -6,6 +6,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { DataProxy } from 'apollo-cache';
 import gql from 'graphql-tag';
 import { useMutation } from 'react-apollo-hooks';
 import { PanelHeader, ScrollingPaper } from '..';
@@ -13,7 +14,7 @@ import { GetAuthors } from '../authors/__generated__/GetAuthors';
 import { GetPublishers } from '../publishers/__generated__/GetPublishers';
 import { AuthorsDialog } from './authors-dialog';
 import { BookDialog } from './book-dialog';
-import { BOOK_FRAGMENT } from './books-queries';
+import { BOOK_FRAGMENT, GET_BOOKS } from './books-queries';
 import { GetBooks } from './__generated__/GetBooks';
 import { CreateBookVariables } from './__generated__/CreateBook';
 import { UpdateBookVariables } from './__generated__/UpdateBook';
@@ -131,7 +132,12 @@ export const BooksPanel = ({
                                 publisherId: book.publisherId
                             }
                         };
-                        createBook({ variables });
+                        createBook({
+                            variables,
+                            // Update BooksQuery in Apollo cache
+                            // Needed only in this "Create" case
+                            update: updateBooksQuery
+                        });
                         hideBookDialog();
                     }}
                     onCancel={() => {
@@ -181,6 +187,27 @@ export const BooksPanel = ({
         </React.Fragment>
     );
 };
+
+function findBook(books: Array<any>, bookId: string) {
+    return books.find(book => book.id === bookId);
+}
+
+// Function to update BooksQuery in Apollo cache
+// Needed only in the CREATE_BOOK use case
+function updateBooksQuery(store: DataProxy, result: any) {
+    const resultBook = result.data.createBook;
+    const storeData = store.readQuery({
+        query: GET_BOOKS
+    }) as any;
+    // Don't double add the book
+    if (!findBook(storeData.books, resultBook.id)) {
+        storeData.books.push(resultBook);
+        store.writeQuery({
+            query: GET_BOOKS,
+            data: storeData
+        });
+    }
+}
 
 const CREATE_BOOK = gql`
     mutation CreateBook($book: BookInput!) {

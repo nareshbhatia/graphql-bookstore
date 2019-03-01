@@ -5,10 +5,12 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { DataProxy } from 'apollo-cache';
 import gql from 'graphql-tag';
 import { useMutation } from 'react-apollo-hooks';
 import { PanelHeader, ScrollingPaper } from '..';
 import { AuthorDialog } from './author-dialog';
+import { GET_AUTHORS } from './authors-queries';
 import { GetAuthors } from './__generated__/GetAuthors';
 
 export interface AuthorsPanelProps {
@@ -71,7 +73,10 @@ export const AuthorsPanel = ({ data: { authors } }: AuthorsPanelProps) => {
                         createAuthor({
                             variables: {
                                 name: author.name
-                            }
+                            },
+                            // Update AuthorsQuery in Apollo cache
+                            // Needed only in this "Create" case
+                            update: updateAuthorsQuery
                         });
                         hideAuthorDialog();
                     }}
@@ -101,6 +106,27 @@ export const AuthorsPanel = ({ data: { authors } }: AuthorsPanelProps) => {
         </React.Fragment>
     );
 };
+
+function findAuthor(authors: Array<any>, authorId: string) {
+    return authors.find(author => author.id === authorId);
+}
+
+// Function to update AuthorsQuery in Apollo cache
+// Needed only in this CREATE_AUTHOR case
+function updateAuthorsQuery(store: DataProxy, result: any) {
+    const resultAuthor = result.data.createAuthor;
+    const storeData = store.readQuery({
+        query: GET_AUTHORS
+    }) as any;
+    // Don't double add the author
+    if (!findAuthor(storeData.authors, resultAuthor.id)) {
+        storeData.authors.push(resultAuthor);
+        store.writeQuery({
+            query: GET_AUTHORS,
+            data: storeData
+        });
+    }
+}
 
 const CREATE_AUTHOR = gql`
     mutation CreateAuthor($name: String!) {

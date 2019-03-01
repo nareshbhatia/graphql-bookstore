@@ -5,10 +5,12 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { DataProxy } from 'apollo-cache';
 import gql from 'graphql-tag';
 import { useMutation } from 'react-apollo-hooks';
 import { PanelHeader, ScrollingPaper } from '..';
 import { PublisherDialog } from './publisher-dialog';
+import { GET_PUBLISHERS } from './publishers-queries';
 import { GetPublishers } from './__generated__/GetPublishers';
 
 export interface PublishersPanelProps {
@@ -73,7 +75,10 @@ export const PublishersPanel = ({
                         createPublisher({
                             variables: {
                                 name: publisher.name
-                            }
+                            },
+                            // Update PublishersQuery in Apollo cache
+                            // Needed only in this "Create" case
+                            update: updatePublishersQuery
                         });
                         hidePublisherDialog();
                     }}
@@ -103,6 +108,27 @@ export const PublishersPanel = ({
         </React.Fragment>
     );
 };
+
+function findPublisher(publishers: Array<any>, publisherId: string) {
+    return publishers.find(publisher => publisher.id === publisherId);
+}
+
+// Function to update PublishersQuery in Apollo cache
+// Needed only in this CREATE_PUBLISHER case
+function updatePublishersQuery(store: DataProxy, result: any) {
+    const resultPublisher = result.data.createPublisher;
+    const storeData = store.readQuery({
+        query: GET_PUBLISHERS
+    }) as any;
+    // Don't double add the publisher
+    if (!findPublisher(storeData.publishers, resultPublisher.id)) {
+        storeData.publishers.push(resultPublisher);
+        store.writeQuery({
+            query: GET_PUBLISHERS,
+            data: storeData
+        });
+    }
+}
 
 const CREATE_PUBLISHER = gql`
     mutation CreatePublisher($name: String!) {
