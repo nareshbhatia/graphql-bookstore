@@ -1,0 +1,60 @@
+{
+  "name": "apollo-bookstore-client-with-hooks",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "gql:schema": "apollo service:download -c apollo.config.js",
+    "gql:types": "apollo client:codegen -c apollo.config.js --localSchemaFile=schema.json --target=typescript --globalTypesFile=src/graphql-types.ts",
+    "format": "prettier --write 'src/**/*.ts*'"
+  },
+  "dependencies": {
+    "@material-ui/core": "^3.9.2",
+    "@material-ui/icons": "^3.0.2",
+    "apollo-cache-inmemory": "^1.4.3",
+    "apollo-client": "^2.4.13",
+    "apollo-link": "^1.2.8",
+    "apollo-link-error": "^1.1.7",
+    "apollo-link-http": "^1.5.11",
+    "apollo-link-ws": "^1.0.14",
+    "classnames": "^2.2.6",
+    "formik": "^1.5.1",
+    "graphql": "^14.1.1",
+    "graphql-tag": "^2.10.1",
+    "history": "^4.7.2",
+    "mobx": "^4.9.2",
+    "mobx-react": "^5.4.3",
+    "mobx-state-router": "^4.0.3",
+    "react": "^16.8.3",
+    "react-apollo-hooks": "^0.4.1",
+    "react-dom": "^16.8.3",
+    "subscriptions-transport-ws": "^0.9.15",
+    "yup": "^0.26.10"
+  },
+  "devDependencies": {
+    "@types/classnames": "^2.2.7",
+    "@types/graphql": "^14.0.7",
+    "@types/history": "^4.7.2",
+    "@types/jest": "24.0.3",
+    "@types/node": "10.12.18",
+    "@types/react": "16.8.6",
+    "@types/react-dom": "16.8.2",
+    "@types/yup": "^0.26.10",
+    "apollo": "^2.5.1",
+    "prettier": "^1.16.4",
+    "react-scripts": "2.1.5",
+    "typescript": "3.3.3"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}

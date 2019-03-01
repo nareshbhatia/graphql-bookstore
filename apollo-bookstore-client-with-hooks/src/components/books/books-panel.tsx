@@ -1,0 +1,199 @@
+import React, { useState } from 'react';
+
+import Button from '@material-ui/core/Button';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import gql from 'graphql-tag';
+import { useMutation } from 'react-apollo-hooks';
+import { PanelHeader, ScrollingPaper } from '..';
+import { GetAuthors } from '../authors/__generated__/GetAuthors';
+import { GetPublishers } from '../publishers/__generated__/GetPublishers';
+import { AuthorsDialog } from './authors-dialog';
+import { BookDialog } from './book-dialog';
+import { BOOK_FRAGMENT } from './books-queries';
+import { GetBooks } from './__generated__/GetBooks';
+import { CreateBookVariables } from './__generated__/CreateBook';
+import { UpdateBookVariables } from './__generated__/UpdateBook';
+import { SetBookAuthorsVariables } from './__generated__/SetBookAuthors';
+
+export interface BooksPanelProps {
+    dataBooks: GetBooks;
+    dataAuthors: GetAuthors;
+    dataPublishers: GetPublishers;
+}
+
+export const BooksPanel = ({
+    dataBooks: { books },
+    dataAuthors: { authors },
+    dataPublishers: { publishers }
+}: BooksPanelProps) => {
+    const [showBookDialog, setShowBookDialog] = useState(false);
+    const [showAuthorsDialog, setShowAuthorsDialog] = useState(false);
+    const [isNewBook, setNewBook] = useState(true);
+    const [editedBook, setEditedBook] = useState<any>(null);
+    const createBook = useMutation(CREATE_BOOK);
+    const updateBook = useMutation(UPDATE_BOOK);
+    const setBookAuthors = useMutation(SET_BOOK_AUTHORS);
+
+    return (
+        <React.Fragment>
+            <PanelHeader
+                title="Books"
+                onAddClicked={() => {
+                    setShowBookDialog(true);
+                    setNewBook(true);
+                    setEditedBook({ name: '', publisherId: '' });
+                }}
+            />
+            <ScrollingPaper>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Publisher</TableCell>
+                            <TableCell>Authors</TableCell>
+                            <TableCell />
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {books.map(book => (
+                            <TableRow
+                                hover
+                                key={book.id}
+                                onClick={() => {
+                                    setShowBookDialog(true);
+                                    setNewBook(false);
+                                    setEditedBook(
+                                        Object.assign({}, book, {
+                                            publisherId: book.publisher.id
+                                        })
+                                    );
+                                }}
+                            >
+                                <TableCell>{book.name}</TableCell>
+                                <TableCell>{book.publisher.name}</TableCell>
+                                <TableCell>
+                                    {book.authors
+                                        .map(author => author.name)
+                                        .join(', ')}
+                                </TableCell>
+                                <TableCell
+                                    onClick={(e: any) => {
+                                        e.stopPropagation();
+                                    }}
+                                >
+                                    <Button
+                                        onClick={() => {
+                                            setShowAuthorsDialog(true);
+                                            setNewBook(false);
+                                            setEditedBook(
+                                                Object.assign({}, book, {
+                                                    publisherId:
+                                                        book.publisher.id
+                                                })
+                                            );
+                                        }}
+                                    >
+                                        Edit Authors
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </ScrollingPaper>
+
+            {showBookDialog && isNewBook && (
+                <BookDialog
+                    book={editedBook}
+                    publishers={publishers}
+                    onSave={book => {
+                        const variables: CreateBookVariables = {
+                            book: {
+                                name: book.name,
+                                publisherId: book.publisherId
+                            }
+                        };
+                        createBook({ variables });
+                        setShowBookDialog(false);
+                    }}
+                    onCancel={() => {
+                        setShowBookDialog(false);
+                    }}
+                />
+            )}
+
+            {showBookDialog && !isNewBook && (
+                <BookDialog
+                    book={editedBook}
+                    publishers={publishers}
+                    onSave={book => {
+                        const variables: UpdateBookVariables = {
+                            bookId: book.id,
+                            book: {
+                                name: book.name,
+                                publisherId: book.publisherId
+                            }
+                        };
+                        updateBook({ variables });
+                        setShowBookDialog(false);
+                    }}
+                    onCancel={() => {
+                        setShowBookDialog(false);
+                    }}
+                />
+            )}
+
+            {showAuthorsDialog && (
+                <AuthorsDialog
+                    book={editedBook}
+                    authors={authors}
+                    onSave={(bookId: string, authorIds: Array<string>) => {
+                        const variables: SetBookAuthorsVariables = {
+                            bookId,
+                            authorIds
+                        };
+                        setBookAuthors({ variables });
+                        setShowAuthorsDialog(false);
+                    }}
+                    onCancel={() => {
+                        setShowAuthorsDialog(false);
+                    }}
+                />
+            )}
+        </React.Fragment>
+    );
+};
+
+const CREATE_BOOK = gql`
+    mutation CreateBook($book: BookInput!) {
+        createBook(book: $book) {
+            ...BookFragment
+        }
+    }
+
+    ${BOOK_FRAGMENT}
+`;
+
+const UPDATE_BOOK = gql`
+    mutation UpdateBook($bookId: ID!, $book: BookInput!) {
+        updateBook(bookId: $bookId, book: $book) {
+            ...BookFragment
+        }
+    }
+
+    ${BOOK_FRAGMENT}
+`;
+
+const SET_BOOK_AUTHORS = gql`
+    mutation SetBookAuthors($bookId: ID!, $authorIds: [ID!]!) {
+        setBookAuthors(bookId: $bookId, authorIds: $authorIds) {
+            ...BookFragment
+        }
+    }
+
+    ${BOOK_FRAGMENT}
+`;
