@@ -1,5 +1,7 @@
 GraphQL Bookstore
 =================
+\[This is the code repo for my [GraphQL tutorial](https://medium.com/naresh-bhatia/graphql-concepts-i-wish-someone-explained-to-me-a-year-ago-514d5b3c0eab) on Medium.\]
+
 Most GraphQL tutorials use simplistic examples to demonstrate its capabilities. Unfortunately, when we start building real applications, we run into complexities that these tutorials do not address. This repo demonstrates the use of GraphQL to implement a rich domain with multiple entities and relationships. We use the [Apollo GraphQL](https://www.apollographql.com/) tools and libraries for this implementation.
 
 1. Our example uses a simple book domain containing 3 entities and 2 relationships.
