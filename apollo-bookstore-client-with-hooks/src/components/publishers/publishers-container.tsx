@@ -2,14 +2,13 @@ import React from 'react';
 
 import gql from 'graphql-tag';
 import { useQuery, useSubscription } from 'react-apollo-hooks';
-import { Loading } from '..';
 import { MutationType } from '../../graphql-types';
 import { PublishersPanel } from './publishers-panel';
 import { GET_PUBLISHERS } from './publishers-queries';
 import { PublisherMutated } from './__generated__/PublisherMutated';
 
 export const PublishersContainer = () => {
-    const { loading, error, data } = useQuery(GET_PUBLISHERS);
+    const { error, data } = useQuery(GET_PUBLISHERS, { suspend: true });
     if (error) {
         throw error;
     }
@@ -72,7 +71,7 @@ export const PublishersContainer = () => {
         }
     });
 
-    return loading ? <Loading /> : <PublishersPanel data={data} />;
+    return <PublishersPanel data={data} />;
 };
 
 function findPublisher(publishers: Array<any>, publisherId: string) {

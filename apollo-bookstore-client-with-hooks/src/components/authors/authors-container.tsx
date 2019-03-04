@@ -2,14 +2,13 @@ import React from 'react';
 
 import gql from 'graphql-tag';
 import { useQuery, useSubscription } from 'react-apollo-hooks';
-import { Loading } from '..';
 import { MutationType } from '../../graphql-types';
 import { AuthorsPanel } from './authors-panel';
 import { GET_AUTHORS } from './authors-queries';
 import { AuthorMutated } from './__generated__/AuthorMutated';
 
 export const AuthorsContainer = () => {
-    const { loading, error, data } = useQuery(GET_AUTHORS);
+    const { error, data } = useQuery(GET_AUTHORS, { suspend: true });
     if (error) {
         throw error;
     }
@@ -68,7 +67,7 @@ export const AuthorsContainer = () => {
         }
     });
 
-    return loading ? <Loading /> : <AuthorsPanel data={data} />;
+    return <AuthorsPanel data={data} />;
 };
 
 function findAuthor(authors: Array<any>, authorId: string) {

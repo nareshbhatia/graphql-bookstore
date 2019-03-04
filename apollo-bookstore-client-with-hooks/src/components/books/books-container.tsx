@@ -2,7 +2,6 @@ import React from 'react';
 
 import gql from 'graphql-tag';
 import { useQuery, useSubscription } from 'react-apollo-hooks';
-import { Loading } from '..';
 import { MutationType } from '../../graphql-types';
 import { GET_AUTHORS } from '../authors/authors-queries';
 import { GET_PUBLISHERS } from '../publishers/publishers-queries';
@@ -11,25 +10,18 @@ import { BOOK_FRAGMENT, GET_BOOKS } from './books-queries';
 import { BookMutated } from './__generated__/BookMutated';
 
 export const BooksContainer = () => {
-    const {
-        loading: loadingBooks,
-        error: errorBooks,
-        data: dataBooks
-    } = useQuery(GET_BOOKS);
+    const { error: errorBooks, data: dataBooks } = useQuery(GET_BOOKS, {
+        suspend: true
+    });
 
-    const {
-        loading: loadingAuthors,
-        error: errorAuthors,
-        data: dataAuthors
-    } = useQuery(GET_AUTHORS);
+    const { error: errorAuthors, data: dataAuthors } = useQuery(GET_AUTHORS, {
+        suspend: true
+    });
 
-    const {
-        loading: loadingPublishers,
-        error: errorPublishers,
-        data: dataPublishers
-    } = useQuery(GET_PUBLISHERS);
-
-    const loading = loadingBooks || loadingAuthors || loadingPublishers;
+    const { error: errorPublishers, data: dataPublishers } = useQuery(
+        GET_PUBLISHERS,
+        { suspend: true }
+    );
 
     if (errorBooks) {
         throw errorBooks;
@@ -95,9 +87,7 @@ export const BooksContainer = () => {
         }
     });
 
-    return loading ? (
-        <Loading />
-    ) : (
+    return (
         <BooksPanel
             dataBooks={dataBooks}
             dataAuthors={dataAuthors}

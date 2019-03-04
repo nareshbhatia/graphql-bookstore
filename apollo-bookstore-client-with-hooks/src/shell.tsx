@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import { inject } from 'mobx-react';
 import { RouterView, ViewMap } from 'mobx-state-router';
+import { Loading } from './components';
 import { HomePage } from './pages/home-page';
 import { NotFoundPage } from './pages/not-found-page';
 import { SettingsPage } from './pages/settings-page';
@@ -61,10 +62,12 @@ export const Shell = withStyles(styles)(
     inject('rootStore')(({ classes, rootStore }: ShellProps) => {
         return (
             <div className={classes.root}>
-                <RouterView
-                    routerStore={rootStore!.routerStore}
-                    viewMap={viewMap}
-                />
+                <Suspense fallback={<Loading />}>
+                    <RouterView
+                        routerStore={rootStore!.routerStore}
+                        viewMap={viewMap}
+                    />
+                </Suspense>
             </div>
         );
     })
