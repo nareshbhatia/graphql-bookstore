@@ -10,7 +10,7 @@ import { getMainDefinition } from 'apollo-utilities';
 import { Provider } from 'mobx-react';
 import { HistoryAdapter } from 'mobx-state-router';
 import { ApolloProvider } from 'react-apollo-hooks';
-import { getTheme } from './components';
+import { ErrorBoundary, getTheme } from './components';
 import { Shell } from './shell';
 import { rootStore } from './stores';
 import { history } from './utils/history';
@@ -59,12 +59,14 @@ const client = new ApolloClient({
 
 export const App = () => {
     return (
-        <ApolloProvider client={client}>
-            <MuiThemeProvider theme={theme}>
-                <Provider rootStore={rootStore}>
-                    <Shell />
-                </Provider>
-            </MuiThemeProvider>
-        </ApolloProvider>
+        <ErrorBoundary>
+            <ApolloProvider client={client}>
+                <MuiThemeProvider theme={theme}>
+                    <Provider rootStore={rootStore}>
+                        <Shell />
+                    </Provider>
+                </MuiThemeProvider>
+            </ApolloProvider>
+        </ErrorBoundary>
     );
 };

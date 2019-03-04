@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 
-import { CenteredMessage } from './centered-message';
+import { ErrorMessage, Loading } from '..';
 
 export interface HandleQueryProps {
     loading: boolean;
@@ -13,11 +13,11 @@ export const HandleQuery: React.FC<HandleQueryProps> = ({
     children
 }) => {
     if (loading) {
-        return <CenteredMessage>Loading...</CenteredMessage>;
+        return <Loading />;
     }
 
     if (error) {
-        return <CenteredMessage>{error.message}</CenteredMessage>;
+        return <ErrorMessage>{error.message}</ErrorMessage>;
     }
 
     return children as ReactElement<any>;

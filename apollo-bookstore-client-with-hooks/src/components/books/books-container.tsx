@@ -2,7 +2,7 @@ import React from 'react';
 
 import gql from 'graphql-tag';
 import { useQuery, useSubscription } from 'react-apollo-hooks';
-import { HandleQuery } from '..';
+import { Loading } from '..';
 import { MutationType } from '../../graphql-types';
 import { GET_AUTHORS } from '../authors/authors-queries';
 import { GET_PUBLISHERS } from '../publishers/publishers-queries';
@@ -30,11 +30,16 @@ export const BooksContainer = () => {
     } = useQuery(GET_PUBLISHERS);
 
     const loading = loadingBooks || loadingAuthors || loadingPublishers;
-    const error = errorBooks
-        ? errorBooks
-        : errorAuthors
-        ? errorAuthors
-        : errorPublishers;
+
+    if (errorBooks) {
+        throw errorBooks;
+    }
+    if (errorAuthors) {
+        throw errorAuthors;
+    }
+    if (errorPublishers) {
+        throw errorPublishers;
+    }
 
     useSubscription(BOOK_MUTATED, {
         onSubscriptionData: ({ client, subscriptionData }) => {
@@ -90,14 +95,14 @@ export const BooksContainer = () => {
         }
     });
 
-    return (
-        <HandleQuery loading={loading} error={error}>
-            <BooksPanel
-                dataBooks={dataBooks}
-                dataAuthors={dataAuthors}
-                dataPublishers={dataPublishers}
-            />
-        </HandleQuery>
+    return loading ? (
+        <Loading />
+    ) : (
+        <BooksPanel
+            dataBooks={dataBooks}
+            dataAuthors={dataAuthors}
+            dataPublishers={dataPublishers}
+        />
     );
 };
 

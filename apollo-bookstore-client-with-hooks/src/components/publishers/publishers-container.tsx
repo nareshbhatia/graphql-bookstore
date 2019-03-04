@@ -2,7 +2,7 @@ import React from 'react';
 
 import gql from 'graphql-tag';
 import { useQuery, useSubscription } from 'react-apollo-hooks';
-import { HandleQuery } from '..';
+import { Loading } from '..';
 import { MutationType } from '../../graphql-types';
 import { PublishersPanel } from './publishers-panel';
 import { GET_PUBLISHERS } from './publishers-queries';
@@ -10,6 +10,9 @@ import { PublisherMutated } from './__generated__/PublisherMutated';
 
 export const PublishersContainer = () => {
     const { loading, error, data } = useQuery(GET_PUBLISHERS);
+    if (error) {
+        throw error;
+    }
 
     useSubscription(PUBLISHER_MUTATED, {
         onSubscriptionData: ({ client, subscriptionData }) => {
@@ -69,11 +72,7 @@ export const PublishersContainer = () => {
         }
     });
 
-    return (
-        <HandleQuery loading={loading} error={error}>
-            <PublishersPanel data={data} />
-        </HandleQuery>
-    );
+    return loading ? <Loading /> : <PublishersPanel data={data} />;
 };
 
 function findPublisher(publishers: Array<any>, publisherId: string) {

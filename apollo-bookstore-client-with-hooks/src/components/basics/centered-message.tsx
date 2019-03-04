@@ -10,3 +10,9 @@ export const CenteredMessage: React.FC<{}> = ({ children }) => {
         </CenteredContainer>
     );
 };
+
+export const Loading = () => <CenteredMessage>Loading...</CenteredMessage>;
+
+export const ErrorMessage: React.FC<{}> = children => (
+    <CenteredMessage>{children}</CenteredMessage>
+);

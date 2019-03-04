@@ -2,7 +2,7 @@ import React from 'react';
 
 import gql from 'graphql-tag';
 import { useQuery, useSubscription } from 'react-apollo-hooks';
-import { HandleQuery } from '..';
+import { Loading } from '..';
 import { MutationType } from '../../graphql-types';
 import { AuthorsPanel } from './authors-panel';
 import { GET_AUTHORS } from './authors-queries';
@@ -10,6 +10,9 @@ import { AuthorMutated } from './__generated__/AuthorMutated';
 
 export const AuthorsContainer = () => {
     const { loading, error, data } = useQuery(GET_AUTHORS);
+    if (error) {
+        throw error;
+    }
 
     useSubscription(AUTHOR_MUTATED, {
         onSubscriptionData: ({ client, subscriptionData }) => {
@@ -65,11 +68,7 @@ export const AuthorsContainer = () => {
         }
     });
 
-    return (
-        <HandleQuery loading={loading} error={error}>
-            <AuthorsPanel data={data} />
-        </HandleQuery>
-    );
+    return loading ? <Loading /> : <AuthorsPanel data={data} />;
 };
 
 function findAuthor(authors: Array<any>, authorId: string) {

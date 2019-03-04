@@ -1,5 +1,9 @@
 export { AuthorsContainer } from './authors/authors-container';
-export { CenteredMessage } from './basics/centered-message';
+export {
+    CenteredMessage,
+    ErrorMessage,
+    Loading
+} from './basics/centered-message';
 export {
     CenteredContainer,
     HorizontalContainer,
@@ -8,6 +12,7 @@ export {
     ScrollingPaper,
     VerticalContainer
 } from './basics/containers';
+export { ErrorBoundary } from './basics/error-boundary';
 export { HandleQuery } from './basics/handle-query';
 export { Page } from './basics/page';
 export { PanelHeader } from './basics/panel-header';
