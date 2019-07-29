@@ -14,18 +14,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "apollo-datasource": "^0.2.1",
-    "apollo-server": "^2.3.1",
-    "graphql": "^14.0.2",
-    "graphql-redis-subscriptions": "^2.0.0",
-    "merge-graphql-schemas": "^1.5.8"
+    "apollo-datasource": "^0.6.1",
+    "apollo-server": "^2.7.2",
+    "graphql": "^14.4.2",
+    "graphql-redis-subscriptions": "^2.1.1",
+    "merge-graphql-schemas": "^1.6.2-3705b28.0"
   },
   "devDependencies": {
-    "@types/graphql": "^14.0.4",
-    "@types/node": "^10.12.18",
-    "nodemon": "^1.18.9",
-    "prettier": "^1.15.3",
-    "ts-node": "^7.0.1",
-    "typescript": "^3.2.2"
+    "@types/graphql": "14.2.3",
+    "@types/node": "8.10.51",
+    "nodemon": "^1.19.1",
+    "prettier": "^1.18.2",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.3"
   }
 }
