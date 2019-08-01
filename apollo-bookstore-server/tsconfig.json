@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "lib": ["es2016", "esnext.asynciterable"],
-    "outDir": "./dist",
-    "sourceMap": true,
-    "target": "es2016",
+    "module": "commonjs",
     "moduleResolution": "node",
-    "esModuleInterop": true
+    "outDir": "dist",
+    "sourceMap": true,
+    "target": "es2016"
   },
   "include": [
     "src"
