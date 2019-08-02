@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "prebuild": "rimraf dist",
+    "build": "tsc && yarn copy-to-dist",
+    "copy-to-dist": "copyfiles --up 1 src/graphql/typedefs/* dist",
     "dev": "nodemon --watch src -e ts,graphql --exec yarn start:dev",
     "format": "prettier --write README.md 'src/**/*.ts'",
     "start": "node dist/index.js",
@@ -24,8 +26,10 @@
   "devDependencies": {
     "@types/graphql": "14.2.3",
     "@types/node": "8.10.51",
+    "copyfiles": "^2.1.1",
     "nodemon": "^1.19.1",
     "prettier": "^1.18.2",
+    "rimraf": "^2.6.3",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.3"
   }
