@@ -18,7 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "apollo-datasource": "^0.6.1",
-    "apollo-server": "^2.7.2",
+    "apollo-server": "^2.14.2",
     "graphql": "^14.4.2",
     "graphql-redis-subscriptions": "^2.1.1",
     "merge-graphql-schemas": "^1.6.2-3705b28.0"
